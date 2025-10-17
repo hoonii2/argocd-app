@@ -1,0 +1,28 @@
+# 기본값만 정의
+replicaCount: 2
+
+image:
+  repository: hashicorp/http-echo
+  tag: "0.2.3"
+  pullPolicy: IfNotPresent
+
+clusterName: ""  # 환경별로 오버라이드
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5678
+
+ingress:
+  enabled: true
+  ingressClassName: alb
+  hostname: ""  # 환경별로 오버라이드
+  annotations: {}  # 환경별로 오버라이드
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi

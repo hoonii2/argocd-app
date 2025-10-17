@@ -8,10 +8,7 @@ spec:
   source:
     repoURL: https://github.com/hoonii2/argocd-app.git
     targetRevision: main
-    path: charts/simple-web                    # 공통 차트 경로
-    helm:
-      valueFiles:
-      - ../../common-apps/green/values/simple-web.yaml  # 환경별 values
+    path: common-apps/green/charts/simple-web
   destination:
     server: https://kubernetes.default.svc
     namespace: default

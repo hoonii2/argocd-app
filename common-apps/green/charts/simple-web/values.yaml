@@ -1,11 +1,13 @@
-clusterName: green-cluster
+# 상위 차트(simple-web)의 values를 오버라이드
+simple-web:
+  clusterName: green-cluster
 
-ingress:
-  hostname: web.hoonii2.store
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-    external-dns.alpha.kubernetes.io/hostname: web.hoonii2.store
-    external-dns.alpha.kubernetes.io/aws-weight: "0"
-    external-dns.alpha.kubernetes.io/set-identifier: simple-web-green
+  ingress:
+    hostname: web.hoonii2.store
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+      external-dns.alpha.kubernetes.io/hostname: web.hoonii2.store
+      external-dns.alpha.kubernetes.io/aws-weight: "0"
+      external-dns.alpha.kubernetes.io/set-identifier: simple-web-green

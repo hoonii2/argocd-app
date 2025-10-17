@@ -1,4 +1,4 @@
-# 기본값만 정의
+# 기본값만 정의 (각 환경에서 오버라이드)
 replicaCount: 2
 
 image:
@@ -6,7 +6,7 @@ image:
   tag: "0.2.3"
   pullPolicy: IfNotPresent
 
-clusterName: ""  # 환경별로 오버라이드
+clusterName: ""
 
 service:
   type: ClusterIP
@@ -16,8 +16,8 @@ service:
 ingress:
   enabled: true
   ingressClassName: alb
-  hostname: ""  # 환경별로 오버라이드
-  annotations: {}  # 환경별로 오버라이드
+  hostname: ""
+  annotations: {}
 
 resources:
   limits:

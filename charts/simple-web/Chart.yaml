@@ -1,6 +1,6 @@
 apiVersion: v2
 name: simple-web
-description: Simple web service showing cluster and pod info
+description: Simple web service base chart
 type: application
 version: 0.1.0
 appVersion: "1.0"

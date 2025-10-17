@@ -19,5 +19,7 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
     external-dns.alpha.kubernetes.io/hostname: web.hoonii2.store
+    external-dns.alpha.kubernetes.io/aws-weight: "100"  # 가중치 추가
+    external-dns.alpha.kubernetes.io/set-identifier: simple-web-primary  # 식별자 추가
 
 clusterName: my-cluster

@@ -1,0 +1,12 @@
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/hoonii2/argocd-apps.git
+    targetRevision: main
+
+apps:
+  simple-web:
+    enabled: true
+    namespace: default
+    path: simple-web

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/hoonii2/argocd-app.git
     targetRevision: main
-    path: common-apps/default/charts/simple-web
+    path: common-apps/green/charts/simple-web
   destination:
     server: https://kubernetes.default.svc
     namespace: default

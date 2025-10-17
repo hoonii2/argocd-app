@@ -1,4 +1,4 @@
-{{- if .Values.apps.simpleWeb.enabled }}
+{{- if .Values.apps.simpleweb.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -11,10 +11,10 @@ spec:
   source:
     repoURL: {{ .Values.spec.source.repoURL }}
     targetRevision: {{ .Values.spec.source.targetRevision }}
-    path: {{ .Values.apps.simpleWeb.path }}
+    path: {{ .Values.apps.simpleweb.path }}
   destination:
     server: {{ .Values.spec.destination.server }}
-    namespace: {{ .Values.apps.simpleWeb.namespace }}
+    namespace: {{ .Values.apps.simpleweb.namespace }}
   syncPolicy:
     automated:
       prune: true

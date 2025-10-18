@@ -8,11 +8,11 @@ spec:
   amiSelectorTerms:
     - alias: {{ .Values.ec2NodeClass.amiFamily }}@latest
   
-  role: {{ .Values.nodeRoleName }}
+  instanceProfile: {{ .Values.instanceProfileName }}
   
   subnetSelectorTerms:
     - tags:
-        karpenter.sh/discovery: {{ .Values.clusterName }}
+        karpenter.sh/discovery : {{ .Values.clusterName }}
   
   securityGroupSelectorTerms:
     - tags:

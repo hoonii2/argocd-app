@@ -1,0 +1,45 @@
+# my-cluster 설정
+clusterName: my-cluster
+
+# 노드 IAM 역할 (실제 값으로 교체 필요!)
+nodeRoleName: "my-cluster-cluster-20251017051314598700000002"
+
+nodePool:
+  name: default
+  
+  # 인스턴스 타입 (필요에 따라 추가)
+  instanceTypes:
+    - t3.small
+    - t3.micro
+    - c7i-flex.large
+  
+  capacityType: on-demand
+  
+  limits:
+    cpu: "10"
+    memory: "20Gi"
+  
+  disruption:
+    enabled: true
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 5m
+    budgets:
+      nodes: "10%"
+
+ec2NodeClass:
+  name: default
+  amiFamily: al2023
+  
+  blockDevice:
+    volumeSize: 20Gi
+    volumeType: gp3
+    encrypted: true
+  
+  metadata:
+    httpTokens: required
+    httpPutResponseHopLimit: 2
+
+tags:
+  managed-by: argocd
+  team: devops
+  environment: production

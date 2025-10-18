@@ -1,0 +1,52 @@
+# 클러스터 정보
+clusterName: blue-cluster
+
+# 노드 IAM 역할 이름 (Terraform output에서 확인)
+nodeRoleName: "eks_nodes-node-group-XXXXXXXXXX"
+
+# NodePool 설정
+nodePool:
+  name: default
+  
+  # 인스턴스 타입
+  instanceTypes:
+    - t3.micro
+  
+  # 용량 타입
+  capacityType: on-demand  # on-demand 또는 spot
+  
+  # 리소스 제한
+  limits:
+    cpu: "10"
+    memory: "20Gi"
+  
+  # Disruption 설정
+  disruption:
+    enabled: true
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 5m
+    budgets:
+      nodes: "50%"
+
+# EC2NodeClass 설정
+ec2NodeClass:
+  name: default
+  
+  # AMI
+  amiFamily: al2023  # al2023, al2, bottlerocket
+  
+  # 블록 디바이스
+  blockDevice:
+    volumeSize: 20Gi
+    volumeType: gp3
+    encrypted: true
+  
+  # 메타데이터 옵션
+  metadata:
+    httpTokens: required
+    httpPutResponseHopLimit: 2
+
+# 태그
+tags:
+  managed-by: argocd
+  team: devops

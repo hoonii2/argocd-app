@@ -1,0 +1,40 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: {{ .Values.ec2NodeClass.name }}
+  labels:
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  amiSelectorTerms:
+    - alias: {{ .Values.ec2NodeClass.amiFamily }}@latest
+  
+  role: {{ .Values.nodeRoleName }}
+  
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.clusterName }}
+  
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.clusterName }}
+  
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: {{ .Values.ec2NodeClass.blockDevice.volumeSize }}
+        volumeType: {{ .Values.ec2NodeClass.blockDevice.volumeType }}
+        encrypted: {{ .Values.ec2NodeClass.blockDevice.encrypted }}
+        deleteOnTermination: true
+  
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: {{ .Values.ec2NodeClass.metadata.httpPutResponseHopLimit }}
+    httpTokens: {{ .Values.ec2NodeClass.metadata.httpTokens }}
+  
+  tags:
+    Name: {{ .Values.clusterName }}-karpenter-node
+    cluster: {{ .Values.clusterName }}
+    {{- range $key, $value := .Values.tags }}
+    {{ $key }}: {{ $value }}
+    {{- end }}

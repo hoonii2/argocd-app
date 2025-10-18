@@ -2,7 +2,7 @@
 clusterName: my-cluster
 
 # 노드 IAM 역할 (실제 값으로 교체 필요!)
-instanceProfileName: "Karpenter-my-cluster-20251018141859267500000001"
+instanceProfileName: "eks_nodes-node-group-20251017051314602800000007-20251018151915235400000002"
 
 nodePool:
   name: default

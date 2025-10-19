@@ -1,47 +1,64 @@
 # 클러스터 정보
-clusterName: blue-cluster
+clusterName: my-cluster
 
-# 노드 IAM 역할 이름 (Terraform output에서 확인)
-nodeRoleName: "eks_nodes-node-group-XXXXXXXXXX"
+# Instance Profile 이름
+instanceProfileName: "REPLACE_WITH_INSTANCE_PROFILE_NAME"
 
 # NodePool 설정
 nodePool:
-  name: default
+  # On-Demand NodePool
+  ondemand:
+    enabled: true  # 기본값: 활성화
+    
+    # 프리티어 인스턴스 타입
+    instanceTypes:
+      - t3.micro
+      - t3.small
+    
+    limits:
+      cpu: "10"
+      memory: "20Gi"
+    
+    weight: 50  # 중간 우선순위
+    
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"
   
-  # 인스턴스 타입
-  instanceTypes:
-    - t3.micro
-  
-  # 용량 타입
-  capacityType: on-demand  # on-demand 또는 spot
-  
-  # 리소스 제한
-  limits:
-    cpu: "10"
-    memory: "20Gi"
-  
-  # Disruption 설정
-  disruption:
-    enabled: true
-    consolidationPolicy: WhenEmptyOrUnderutilized
-    consolidateAfter: 5m
-    budgets:
-      nodes: "50%"
+  # Spot NodePool
+  spot:
+    enabled: false  # 기본값: 비활성화 (필요 시 오버라이드)
+    
+    # 프리티어 인스턴스 타입 (다양성 확보)
+    instanceTypes:
+      - t3.micro
+      - t3.small
+      - c7i-flex.large
+    
+    limits:
+      cpu: "20"      # Spot은 더 많이 허용
+      memory: "40Gi"
+    
+    weight: 10  # 낮은 우선순위 (먼저 선택됨)
+    
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 30s  # 빠르게 정리
+      budgets:
+        nodes: "100%"
 
 # EC2NodeClass 설정
 ec2NodeClass:
   name: default
+  amiFamily: al2023
   
-  # AMI
-  amiFamily: al2023  # al2023, al2, bottlerocket
-  
-  # 블록 디바이스
   blockDevice:
     volumeSize: 20Gi
     volumeType: gp3
     encrypted: true
   
-  # 메타데이터 옵션
   metadata:
     httpTokens: required
     httpPutResponseHopLimit: 2
@@ -50,3 +67,4 @@ ec2NodeClass:
 tags:
   managed-by: argocd
   team: devops
+  environment: dev

@@ -1,5 +1,10 @@
 clusterName: my-cluster
 
+image:
+  repository: hashicorp/http-echo
+  tag: "0.2.3"
+  pullPolicy: IfNotPresent
+  
 ingress:
   hostname: web.hoonii2.store
   annotations:

@@ -1,0 +1,64 @@
+# Istiod (Control Plane) Configuration
+
+global:
+  istioNamespace: istio-system
+
+# Pilot (Traffic Management)
+pilot:
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Autoscaling
+  autoscaleEnabled: true
+  autoscaleMin: 1
+  autoscaleMax: 3
+
+  # Environment-specific settings
+  env:
+    # Reduce control plane logging in production
+    PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_OUTBOUND: "true"
+    PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_INBOUND: "true"
+
+# Telemetry v2 (Prometheus, tracing, etc.)
+telemetry:
+  enabled: true
+  v2:
+    enabled: true
+
+# mTLS configuration
+meshConfig:
+  # Default to permissive mode (allows both mTLS and plaintext)
+  # Change to STRICT for production if all services support mTLS
+  defaultConfig:
+    proxyMetadata: {}
+
+  # Access logging (disable in production for performance)
+  accessLogFile: /dev/stdout
+  accessLogEncoding: JSON
+
+  # Outbound traffic policy
+  # REGISTRY_ONLY: only allow traffic to registered services
+  # ALLOW_ANY: allow traffic to any destination (default)
+  outboundTrafficPolicy:
+    mode: ALLOW_ANY
+
+# Sidecar injector configuration
+sidecarInjectorWebhook:
+  enableNamespacesByDefault: false  # Only inject in labeled namespaces
+
+  # Default sidecar resources
+  neverInjectSelector: []
+  alwaysInjectSelector: []
+
+  # Injection template
+  templates: {}
+
+# Istiod service configuration
+service:
+  type: ClusterIP

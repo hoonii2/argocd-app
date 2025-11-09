@@ -1,0 +1,6 @@
+# Istio Base (CRDs) Configuration
+# Minimal configuration - mostly uses defaults
+
+global:
+  # Istio global settings
+  istioNamespace: istio-system

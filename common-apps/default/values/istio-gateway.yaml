@@ -1,0 +1,75 @@
+# Istio Ingress Gateway Configuration
+
+# Gateway deployment configuration
+replicaCount: 2
+
+# Service configuration
+service:
+  type: LoadBalancer
+  annotations:
+    # AWS Load Balancer Controller annotations
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    # NLB에서 SSL 종료하려면 아래 주석 해제
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:region:account:certificate/xxx"
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 443
+    protocol: TCP
+
+# Resource limits
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+# Autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+# Pod placement
+nodeSelector: {}
+tolerations: []
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - istio-gateway
+        topologyKey: kubernetes.io/hostname
+
+# Pod disruption budget
+podDisruptionBudget:
+  minAvailable: 1
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1337
+  runAsGroup: 1337
+  fsGroup: 1337
+
+# Labels
+labels:
+  app: istio-gateway
+  istio: gateway

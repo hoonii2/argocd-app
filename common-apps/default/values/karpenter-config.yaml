@@ -5,46 +5,52 @@ clusterName: my-cluster
 instanceProfileName: "eks_nodes-node-group-20251017051314602800000007-20251018151915235400000002"
 
 nodePool:
-  # On-Demand: 활성화
+  # On-Demand: 폴백용 (Spot 실패 시에만)
   ondemand:
     enabled: true
-    
+
+    # 가장 저렴한 인스턴스만
     instanceTypes:
-      - t3.micro
-      - t3.small
-    
+      - t4g.micro    # $0.0084/h (ARM) - 최저가
+      - t3.micro     # $0.0104/h
+      - t4g.small    # $0.0168/h (ARM)
+      - t3.small     # $0.0208/h
+
     limits:
-      cpu: "10"       # Dev는 적게
+      cpu: "10"
       memory: "20Gi"
-    
-    weight: 50
-    
+
+    weight: 50  # Spot보다 낮은 우선순위
+
     disruption:
-      policy: WhenEmptyOrUnderutilized
-      after: 30s      # Dev는 빠르게
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s
       budgets:
-        nodes: "100%" # Dev는 제한 없음
-  
-  # Spot: 활성화 (Dev에서 테스트)
+        - nodes: "100%"
+
+  # Spot: 최우선 (50% 저렴)
   spot:
     enabled: true
-    
+
+    # 다양한 타입으로 Spot 가용성 확보
     instanceTypes:
-      - t3.micro
-      - t3.small
-      - c7i-flex.large
-    
+      - t4g.micro    # $0.0042/h Spot (ARM)
+      - t3.micro     # $0.0045/h Spot
+      - t4g.small    # $0.0085/h Spot (ARM)
+      - t3.small     # $0.0096/h Spot
+      - c7i-flex.large # 필요 시
+
     limits:
-      cpu: "10"       # Dev는 On-Demand와 동일
+      cpu: "10"
       memory: "20Gi"
-    
-    weight: 10  # Spot 우선 선택
-    
+
+    weight: 10  # 최우선 선택
+
     disruption:
-      policy: WhenEmptyOrUnderutilized
-      after: 30s
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s
       budgets:
-        nodes: "100%"
+        - nodes: "100%"
 
 ec2NodeClass:
   name: default
@@ -71,71 +77,80 @@ teams:
   web:
     enabled: true  # Web 팀 NodePool 활성화
 
+    # Spot + On-Demand 혼합 (비용 최적화)
     capacityTypes:
-      - on-demand
+      - spot         # 우선 (50% 저렴)
+      - on-demand    # 폴백
 
+    # 저렴한 인스턴스 우선 (Karpenter가 자동 선택)
     instanceTypes:
-      - t3.micro
-      - t3.small
+      - t4g.micro    # $0.0084/h (ARM) - 가장 저렴
+      - t3.micro     # $0.0104/h
+      - t4g.small    # $0.0168/h (ARM)
+      - t3.small     # $0.0208/h
 
     limits:
       cpu: "4"
       memory: "8Gi"
 
-    weight: 30
+    weight: 10  # 낮을수록 우선 선택
 
     disruption:
-      policy: WhenEmptyOrUnderutilized
-      after: 1m
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s  # 더 저렴한 인스턴스로 빠르게 교체
       budgets:
-        nodes: "50%"
+        - nodes: "100%"
 
   android:
     enabled: true  # Android 팀 NodePool 활성화
 
     capacityTypes:
+      - spot
       - on-demand
 
+    # ARM 우선 (더 저렴)
     instanceTypes:
-      - t3.small
-      - t4g.small
-      - t4g.micro
+      - t4g.micro    # $0.0084/h (ARM) - 최저가
+      - t4g.small    # $0.0168/h (ARM)
+      - t3.small     # $0.0208/h (폴백)
 
     arch:
-      - amd64
-      - arm64
+      - arm64        # ARM 우선
+      - amd64        # 폴백
 
     limits:
       cpu: "4"
       memory: "8Gi"
 
-    weight: 30
+    weight: 10
 
     disruption:
-      policy: WhenEmptyOrUnderutilized
-      after: 1m
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s
       budgets:
-        nodes: "50%"
+        - nodes: "100%"
 
   backend:
     enabled: true  # Backend 팀 NodePool 활성화
 
     capacityTypes:
+      - spot
       - on-demand
 
+    # 메모리 효율 우선 (t4g.small 4개 > m7i-flex.large 1개)
     instanceTypes:
-      - t3.small
-      - c7i-flex.large
-      - m7i-flex.large
+      - t4g.small    # $0.0168/h, 2 GiB (ARM) - 4개 = 8 GiB, $0.0672/h
+      - t3.small     # $0.0208/h, 2 GiB       - 4개 = 8 GiB, $0.0832/h
+      - c7i-flex.large # $0.0808/h, 4 GiB (CPU 집약적일 때만)
 
     limits:
       cpu: "8"
       memory: "16Gi"
 
-    weight: 30
+    weight: 10
 
     disruption:
-      policy: WhenEmptyOrUnderutilized
-      after: 1m
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s
       budgets:
-        nodes: "50%"
+        - nodes: "100%"

@@ -10,7 +10,7 @@ spec:
   amiSelectorTerms:
     - alias: {{ .Values.ec2NodeClass.amiFamily }}@latest
 
-  role: {{ .Values.instanceProfileName }}
+  instanceProfile: {{ .Values.instanceProfileName }}
 
   subnetSelectorTerms:
     - tags:

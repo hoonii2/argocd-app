@@ -2,7 +2,7 @@
 clusterName: my-cluster
 
 # Instance Profile (Terraform output)
-instanceProfileName: "eks_nodes-node-group-20251017051314602800000007-20251018151915235400000002"
+instanceProfileName: "eks_nodes-node-group-20251112072310118500000008-20251112073427281900000016"
 
 nodePool:
   # On-Demand: 폴백용 (Spot 실패 시에만)

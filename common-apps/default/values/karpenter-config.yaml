@@ -26,7 +26,7 @@ nodePool:
       consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 30s
       budgets:
-        - nodes: "100%"
+        nodes: "100%"
 
   # Spot: 최우선 (50% 저렴)
   spot:
@@ -50,7 +50,7 @@ nodePool:
       consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 30s
       budgets:
-        - nodes: "100%"
+        nodes: "100%"
 
 ec2NodeClass:
   name: default
@@ -128,7 +128,7 @@ teams:
       consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 30s
       budgets:
-        - nodes: "100%"
+        nodes: "100%"
 
   backend:
     enabled: true  # Backend 팀 NodePool 활성화
@@ -153,4 +153,4 @@ teams:
       consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 30s
       budgets:
-        - nodes: "100%"
+        nodes: "100%"

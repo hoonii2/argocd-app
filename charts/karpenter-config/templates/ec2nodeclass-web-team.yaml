@@ -1,0 +1,45 @@
+{{- if .Values.teams.web.enabled }}
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: web-team
+  labels:
+    team: web
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  amiSelectorTerms:
+    - alias: {{ .Values.ec2NodeClass.amiFamily }}@latest
+
+  role: {{ .Values.instanceProfileName }}
+
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.clusterName }}
+
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.clusterName }}
+
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: {{ .Values.ec2NodeClass.blockDevice.volumeSize }}
+        volumeType: {{ .Values.ec2NodeClass.blockDevice.volumeType }}
+        encrypted: {{ .Values.ec2NodeClass.blockDevice.encrypted }}
+        deleteOnTermination: true
+
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: {{ .Values.ec2NodeClass.metadata.httpPutResponseHopLimit }}
+    httpTokens: {{ .Values.ec2NodeClass.metadata.httpTokens }}
+
+  tags:
+    Name: {{ .Values.clusterName }}-web-team-node
+    team: web
+    managed-by: karpenter
+    cluster: {{ .Values.clusterName }}
+    {{- range $key, $value := .Values.tags }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+{{- end }}

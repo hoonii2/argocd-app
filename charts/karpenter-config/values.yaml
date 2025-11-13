@@ -68,3 +68,87 @@ tags:
   managed-by: argocd
   team: devops
   environment: dev
+
+# ========================================
+# Team-based NodePools
+# ========================================
+# 팀별 독립 NodePool 설정 (MSA 팀 격리)
+teams:
+  # Web Team (Frontend)
+  web:
+    enabled: false  # 기본값: 비활성화 (override에서 활성화)
+
+    capacityTypes:
+      - on-demand
+
+    # 가벼운 프론트엔드용 인스턴스
+    instanceTypes:
+      - t3.micro
+      - t3.small
+
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"
+
+  # Android Team (Mobile API Backend)
+  android:
+    enabled: false
+
+    capacityTypes:
+      - on-demand
+
+    # ARM 포함 (t4g)
+    instanceTypes:
+      - t3.small
+      - t4g.small
+      - t4g.micro
+
+    # ARM64 지원
+    arch:
+      - amd64
+      - arm64
+
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"
+
+  # Backend Team (API Server)
+  backend:
+    enabled: false
+
+    capacityTypes:
+      - on-demand
+
+    # CPU/메모리 집약적 워크로드용
+    instanceTypes:
+      - t3.small
+      - c7i-flex.large
+      - m7i-flex.large
+
+    limits:
+      cpu: "8"
+      memory: "16Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"

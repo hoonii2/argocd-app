@@ -1,0 +1,64 @@
+{{- if .Values.teams.android.enabled }}
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: android-team-pool
+  labels:
+    team: android
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: android
+        workload-type: mobile-api
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: android-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.android.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.android.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values:
+            {{- range .Values.teams.android.arch }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team isolation taint
+      taints:
+        - key: team
+          value: android
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.android.limits.cpu | quote }}
+    memory: {{ .Values.teams.android.limits.memory | quote }}
+
+  weight: {{ .Values.teams.android.weight }}
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.android.disruption.policy }}
+    consolidateAfter: {{ .Values.teams.android.disruption.after }}
+    budgets:
+      - nodes: {{ .Values.teams.android.disruption.budgets.nodes | quote }}
+{{- end }}

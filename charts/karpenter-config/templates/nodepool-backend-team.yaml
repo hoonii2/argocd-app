@@ -1,0 +1,61 @@
+{{- if .Values.teams.backend.enabled }}
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: backend-team-pool
+  labels:
+    team: backend
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: backend
+        workload-type: api-server
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: backend-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.backend.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.backend.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team isolation taint
+      taints:
+        - key: team
+          value: backend
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.backend.limits.cpu | quote }}
+    memory: {{ .Values.teams.backend.limits.memory | quote }}
+
+  weight: {{ .Values.teams.backend.weight }}
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.backend.disruption.policy }}
+    consolidateAfter: {{ .Values.teams.backend.disruption.after }}
+    budgets:
+      - nodes: {{ .Values.teams.backend.disruption.budgets.nodes | quote }}
+{{- end }}

@@ -1,0 +1,61 @@
+{{- if .Values.teams.web.enabled }}
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: web-team-pool
+  labels:
+    team: web
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: web
+        workload-type: frontend
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: web-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.web.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.web.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team isolation taint
+      taints:
+        - key: team
+          value: web
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.web.limits.cpu | quote }}
+    memory: {{ .Values.teams.web.limits.memory | quote }}
+
+  weight: {{ .Values.teams.web.weight }}
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.web.disruption.policy }}
+    consolidateAfter: {{ .Values.teams.web.disruption.after }}
+    budgets:
+      - nodes: {{ .Values.teams.web.disruption.budgets.nodes | quote }}
+{{- end }}

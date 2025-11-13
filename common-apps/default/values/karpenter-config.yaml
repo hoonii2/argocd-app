@@ -63,3 +63,79 @@ tags:
   managed-by: argocd
   team: devops
   environment: dev
+
+# ========================================
+# Team NodePools (Dev 환경에서 활성화)
+# ========================================
+teams:
+  web:
+    enabled: true  # Web 팀 NodePool 활성화
+
+    capacityTypes:
+      - on-demand
+
+    instanceTypes:
+      - t3.micro
+      - t3.small
+
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"
+
+  android:
+    enabled: true  # Android 팀 NodePool 활성화
+
+    capacityTypes:
+      - on-demand
+
+    instanceTypes:
+      - t3.small
+      - t4g.small
+      - t4g.micro
+
+    arch:
+      - amd64
+      - arm64
+
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"
+
+  backend:
+    enabled: true  # Backend 팀 NodePool 활성화
+
+    capacityTypes:
+      - on-demand
+
+    instanceTypes:
+      - t3.small
+      - c7i-flex.large
+      - m7i-flex.large
+
+    limits:
+      cpu: "8"
+      memory: "16Gi"
+
+    weight: 30
+
+    disruption:
+      policy: WhenEmptyOrUnderutilized
+      after: 1m
+      budgets:
+        nodes: "50%"

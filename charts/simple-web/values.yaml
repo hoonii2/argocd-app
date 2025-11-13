@@ -6,6 +6,9 @@ image:
   tag: "0.2.3"
   pullPolicy: IfNotPresent
 
+# Architecture: arm64 or amd64
+architecture: "amd64"
+
 clusterName: ""
 
 service:

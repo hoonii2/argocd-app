@@ -13,7 +13,24 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
+        architecture: {{ .Values.architecture }}
     spec:
+      # Architecture-specific node selection
+      nodeSelector:
+        kubernetes.io/arch: {{ .Values.architecture }}
+        team: web
+
+      # Tolerate team and architecture taints
+      tolerations:
+        - key: team
+          operator: Equal
+          value: web
+          effect: NoSchedule
+        - key: architecture
+          operator: Equal
+          value: {{ .Values.architecture }}
+          effect: NoSchedule
+
       containers:
       - name: web
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

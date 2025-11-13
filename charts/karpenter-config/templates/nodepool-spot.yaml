@@ -46,8 +46,8 @@ spec:
   weight: {{ .Values.nodePool.spot.weight }}
   
   disruption:
-    consolidationPolicy: {{ .Values.nodePool.spot.disruption.policy }}
-    consolidateAfter: {{ .Values.nodePool.spot.disruption.after }}
+    consolidationPolicy: {{ .Values.nodePool.spot.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.nodePool.spot.disruption.consolidateAfter }}
     budgets:
-      - nodes: {{ .Values.nodePool.spot.disruption.budgets.nodes | quote }}
+      {{- toYaml .Values.nodePool.spot.disruption.budgets | nindent 6 }}
 {{- end }}

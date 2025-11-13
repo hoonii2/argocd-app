@@ -54,8 +54,8 @@ spec:
   weight: {{ .Values.teams.web.weight }}
 
   disruption:
-    consolidationPolicy: {{ .Values.teams.web.disruption.policy }}
-    consolidateAfter: {{ .Values.teams.web.disruption.after }}
+    consolidationPolicy: {{ .Values.teams.web.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.web.disruption.consolidateAfter }}
     budgets:
-      - nodes: {{ .Values.teams.web.disruption.budgets.nodes | quote }}
+      {{- toYaml .Values.teams.web.disruption.budgets | nindent 6 }}
 {{- end }}

@@ -40,8 +40,8 @@ spec:
   weight: {{ .Values.nodePool.ondemand.weight }}
   
   disruption:
-    consolidationPolicy: {{ .Values.nodePool.ondemand.disruption.policy }}
-    consolidateAfter: {{ .Values.nodePool.ondemand.disruption.after }}
+    consolidationPolicy: {{ .Values.nodePool.ondemand.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.nodePool.ondemand.disruption.consolidateAfter }}
     budgets:
-      - nodes: {{ .Values.nodePool.ondemand.disruption.budgets.nodes | quote }}
+      {{- toYaml .Values.nodePool.ondemand.disruption.budgets | nindent 6 }}
 {{- end }}

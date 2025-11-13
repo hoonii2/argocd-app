@@ -57,8 +57,8 @@ spec:
   weight: {{ .Values.teams.android.weight }}
 
   disruption:
-    consolidationPolicy: {{ .Values.teams.android.disruption.policy }}
-    consolidateAfter: {{ .Values.teams.android.disruption.after }}
+    consolidationPolicy: {{ .Values.teams.android.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.android.disruption.consolidateAfter }}
     budgets:
-      - nodes: {{ .Values.teams.android.disruption.budgets.nodes | quote }}
+      {{- toYaml .Values.teams.android.disruption.budgets | nindent 6 }}
 {{- end }}

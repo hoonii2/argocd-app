@@ -13,7 +13,7 @@ spec:
     chart: istiod
     helm:
       valueFiles:
-      - https://raw.githubusercontent.com/hoonii2/argocd-app/main/common-apps/default/values/istiod.yaml
+      - https://raw.githubusercontent.com/hoonii2/argocd-app/main/common-apps/shared/values/istiod.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system

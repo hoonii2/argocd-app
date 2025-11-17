@@ -13,7 +13,7 @@ spec:
     chart: gateway
     helm:
       valueFiles:
-      - https://raw.githubusercontent.com/hoonii2/argocd-app/main/common-apps/default/values/istio-gateway.yaml
+      - https://raw.githubusercontent.com/hoonii2/argocd-app/main/common-apps/shared/values/istio-gateway.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-ingress

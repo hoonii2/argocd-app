@@ -1,10 +1,13 @@
 {{- if .Values.teams.backend.enabled }}
+---
+# ARM64 NodePool (우선순위 높음 - 비용 절감)
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: backend-team-pool
+  name: backend-team-arm64-pool
   labels:
     team: backend
+    architecture: arm64
     {{- include "karpenter-config.labels" . | nindent 4 }}
 spec:
   template:
@@ -12,6 +15,7 @@ spec:
       labels:
         team: backend
         workload-type: api-server
+        architecture: arm64
     spec:
       nodeClassRef:
         group: karpenter.k8s.aws
@@ -29,7 +33,74 @@ spec:
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            {{- range .Values.teams.backend.instanceTypes }}
+            {{- range .Values.teams.backend.arm64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team + Architecture isolation
+      taints:
+        - key: team
+          value: backend
+          effect: NoSchedule
+        - key: architecture
+          value: arm64
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.backend.limits.cpu | quote }}
+    memory: {{ .Values.teams.backend.limits.memory | quote }}
+
+  weight: 10  # 낮은 우선순위 = 먼저 선택 (ARM이 저렴)
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.backend.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.backend.disruption.consolidateAfter }}
+    budgets:
+      {{- toYaml .Values.teams.backend.disruption.budgets | nindent 6 }}
+
+---
+# AMD64 NodePool (폴백용)
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: backend-team-amd64-pool
+  labels:
+    team: backend
+    architecture: amd64
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: backend
+        workload-type: api-server
+        architecture: amd64
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: backend-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.backend.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.backend.amd64.instanceTypes }}
             - {{ . | quote }}
             {{- end }}
 
@@ -41,17 +112,20 @@ spec:
           operator: In
           values: ["linux"]
 
-      # Team isolation taint
+      # Team + Architecture isolation
       taints:
         - key: team
           value: backend
+          effect: NoSchedule
+        - key: architecture
+          value: amd64
           effect: NoSchedule
 
   limits:
     cpu: {{ .Values.teams.backend.limits.cpu | quote }}
     memory: {{ .Values.teams.backend.limits.memory | quote }}
 
-  weight: {{ .Values.teams.backend.weight }}
+  weight: 50  # 높은 우선순위 = 나중에 선택 (x86이 비쌈)
 
   disruption:
     consolidationPolicy: {{ .Values.teams.backend.disruption.consolidationPolicy }}

@@ -1,10 +1,13 @@
 {{- if .Values.teams.android.enabled }}
+---
+# ARM64 NodePool (우선순위 높음 - 비용 절감)
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: android-team-pool
+  name: android-team-arm64-pool
   labels:
     team: android
+    architecture: arm64
     {{- include "karpenter-config.labels" . | nindent 4 }}
 spec:
   template:
@@ -12,6 +15,7 @@ spec:
       labels:
         team: android
         workload-type: mobile-api
+        architecture: arm64
     spec:
       nodeClassRef:
         group: karpenter.k8s.aws
@@ -29,32 +33,99 @@ spec:
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            {{- range .Values.teams.android.instanceTypes }}
+            {{- range .Values.teams.android.arm64.instanceTypes }}
             - {{ . | quote }}
             {{- end }}
 
         - key: kubernetes.io/arch
           operator: In
-          values:
-            {{- range .Values.teams.android.arch }}
-            - {{ . | quote }}
-            {{- end }}
+          values: ["arm64"]
 
         - key: kubernetes.io/os
           operator: In
           values: ["linux"]
 
-      # Team isolation taint
+      # Team + Architecture isolation
       taints:
         - key: team
           value: android
+          effect: NoSchedule
+        - key: architecture
+          value: arm64
           effect: NoSchedule
 
   limits:
     cpu: {{ .Values.teams.android.limits.cpu | quote }}
     memory: {{ .Values.teams.android.limits.memory | quote }}
 
-  weight: {{ .Values.teams.android.weight }}
+  weight: 10  # 낮은 우선순위 = 먼저 선택 (ARM이 저렴)
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.android.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.android.disruption.consolidateAfter }}
+    budgets:
+      {{- toYaml .Values.teams.android.disruption.budgets | nindent 6 }}
+
+---
+# AMD64 NodePool (폴백용)
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: android-team-amd64-pool
+  labels:
+    team: android
+    architecture: amd64
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: android
+        workload-type: mobile-api
+        architecture: amd64
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: android-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.android.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.android.amd64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team + Architecture isolation
+      taints:
+        - key: team
+          value: android
+          effect: NoSchedule
+        - key: architecture
+          value: amd64
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.android.limits.cpu | quote }}
+    memory: {{ .Values.teams.android.limits.memory | quote }}
+
+  weight: 50  # 높은 우선순위 = 나중에 선택 (x86이 비쌈)
 
   disruption:
     consolidationPolicy: {{ .Values.teams.android.disruption.consolidationPolicy }}

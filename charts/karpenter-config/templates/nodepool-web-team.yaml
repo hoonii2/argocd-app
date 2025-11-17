@@ -33,8 +33,9 @@ spec:
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            - t4g.micro
-            - t4g.small
+            {{- range .Values.teams.web.arm64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
 
         - key: kubernetes.io/arch
           operator: In
@@ -99,8 +100,9 @@ spec:
         - key: node.kubernetes.io/instance-type
           operator: In
           values:
-            - t3.micro
-            - t3.small
+            {{- range .Values.teams.web.amd64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
 
         - key: kubernetes.io/arch
           operator: In

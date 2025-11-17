@@ -1,0 +1,135 @@
+{{- if .Values.teams.devops.enabled }}
+---
+# ARM64 NodePool (우선순위 높음 - 비용 절감)
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: devops-team-arm64-pool
+  labels:
+    team: devops
+    architecture: arm64
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: devops
+        workload-type: infrastructure
+        architecture: arm64
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: devops-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.devops.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.devops.arm64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team isolation
+      taints:
+        - key: team
+          value: devops
+          effect: NoSchedule
+        - key: architecture
+          value: arm64
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.devops.limits.cpu | quote }}
+    memory: {{ .Values.teams.devops.limits.memory | quote }}
+
+  weight: 10  # 낮은 우선순위 = 먼저 선택 (ARM이 저렴)
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.devops.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.devops.disruption.consolidateAfter }}
+    budgets:
+      {{- toYaml .Values.teams.devops.disruption.budgets | nindent 6 }}
+
+---
+# AMD64 NodePool (폴백용)
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: devops-team-amd64-pool
+  labels:
+    team: devops
+    architecture: amd64
+    {{- include "karpenter-config.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        team: devops
+        workload-type: infrastructure
+        architecture: amd64
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: devops-team
+
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- range .Values.teams.devops.capacityTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            {{- range .Values.teams.devops.amd64.instanceTypes }}
+            - {{ . | quote }}
+            {{- end }}
+
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+
+      # Team isolation
+      taints:
+        - key: team
+          value: devops
+          effect: NoSchedule
+        - key: architecture
+          value: amd64
+          effect: NoSchedule
+
+  limits:
+    cpu: {{ .Values.teams.devops.limits.cpu | quote }}
+    memory: {{ .Values.teams.devops.limits.memory | quote }}
+
+  weight: 50  # 높은 우선순위 = 나중에 선택 (x86이 비쌈)
+
+  disruption:
+    consolidationPolicy: {{ .Values.teams.devops.disruption.consolidationPolicy }}
+    consolidateAfter: {{ .Values.teams.devops.disruption.consolidateAfter }}
+    budgets:
+      {{- toYaml .Values.teams.devops.disruption.budgets | nindent 6 }}
+{{- end }}

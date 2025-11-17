@@ -1,0 +1,62 @@
+# DevOps 공유 인프라 NodePool 설정
+# Dev/Prod 환경 구분 없이 공유
+clusterName: my-cluster
+
+# Instance Profile (Terraform output)
+instanceProfileName: "eks_nodes-node-group-20251112072310118500000008-20251112073427281900000016"
+
+ec2NodeClass:
+  amiFamily: al2023
+
+  blockDevice:
+    volumeSize: 20Gi
+    volumeType: gp3
+    encrypted: true
+
+  metadata:
+    httpTokens: required
+    httpPutResponseHopLimit: 2
+
+tags:
+  managed-by: argocd
+  team: devops
+
+# DevOps 팀만 활성화
+teams:
+  web:
+    enabled: false
+
+  android:
+    enabled: false
+
+  backend:
+    enabled: false
+
+  devops:
+    enabled: true  # DevOps 팀 NodePool (환경 구분 없음)
+
+    capacityTypes:
+      - spot
+      - on-demand
+
+    # ARM64 NodePool (우선)
+    arm64:
+      instanceTypes:
+        - t4g.micro
+        - t4g.small
+
+    # AMD64 NodePool (폴백)
+    amd64:
+      instanceTypes:
+        - t3.micro
+        - t3.small
+
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+    disruption:
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 30s
+      budgets:
+        - nodes: "100%"

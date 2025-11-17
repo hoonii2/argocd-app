@@ -5,56 +5,7 @@ environment: prod
 # Instance Profile (Terraform output)
 instanceProfileName: "eks_nodes-node-group-20251112072310118500000008-20251112073427281900000016"
 
-nodePool:
-  # On-Demand: 폴백용 (Spot 실패 시에만)
-  ondemand:
-    enabled: true
-
-    # 가장 저렴한 인스턴스만
-    instanceTypes:
-      - t4g.micro    # $0.0084/h (ARM) - 최저가
-      - t3.micro     # $0.0104/h
-      - t4g.small    # $0.0168/h (ARM)
-      - t3.small     # $0.0208/h
-
-    limits:
-      cpu: "10"
-      memory: "20Gi"
-
-    weight: 50  # Spot보다 낮은 우선순위
-
-    disruption:
-      consolidationPolicy: WhenEmptyOrUnderutilized
-      consolidateAfter: 30s
-      budgets:
-        - nodes: "100%"
-
-  # Spot: 최우선 (50% 저렴)
-  spot:
-    enabled: true
-
-    # 다양한 타입으로 Spot 가용성 확보
-    instanceTypes:
-      - t4g.micro    # $0.0042/h Spot (ARM)
-      - t3.micro     # $0.0045/h Spot
-      - t4g.small    # $0.0085/h Spot (ARM)
-      - t3.small     # $0.0096/h Spot
-      - c7i-flex.large # 필요 시
-
-    limits:
-      cpu: "10"
-      memory: "20Gi"
-
-    weight: 10  # 최우선 선택
-
-    disruption:
-      consolidationPolicy: WhenEmptyOrUnderutilized
-      consolidateAfter: 30s
-      budgets:
-        - nodes: "100%"
-
 ec2NodeClass:
-  name: default
   amiFamily: al2023
   
   blockDevice:

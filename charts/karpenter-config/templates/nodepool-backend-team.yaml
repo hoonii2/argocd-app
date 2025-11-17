@@ -22,7 +22,7 @@ spec:
       nodeClassRef:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
-        name: backend-team
+        name: backend-team-{{ .Values.environment }}
 
       requirements:
         - key: karpenter.sh/capacity-type
@@ -91,7 +91,7 @@ spec:
       nodeClassRef:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
-        name: backend-team
+        name: backend-team-{{ .Values.environment }}
 
       requirements:
         - key: karpenter.sh/capacity-type

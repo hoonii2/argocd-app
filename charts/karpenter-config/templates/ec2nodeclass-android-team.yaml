@@ -2,9 +2,10 @@
 apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
-  name: android-team
+  name: android-team-{{ .Values.environment }}
   labels:
     team: android
+    environment: {{ .Values.environment }}
     {{- include "karpenter-config.labels" . | nindent 4 }}
 spec:
   amiSelectorTerms:

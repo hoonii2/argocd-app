@@ -4,9 +4,10 @@
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: android-team-arm64-pool
+  name: android-team-{{ .Values.environment }}-arm64-pool
   labels:
     team: android
+    environment: {{ .Values.environment }}
     architecture: arm64
     {{- include "karpenter-config.labels" . | nindent 4 }}
 spec:
@@ -14,6 +15,7 @@ spec:
     metadata:
       labels:
         team: android
+    environment: {{ .Values.environment }}
         workload-type: mobile-api
         architecture: arm64
     spec:
@@ -71,9 +73,10 @@ spec:
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: android-team-amd64-pool
+  name: android-team-{{ .Values.environment }}-amd64-pool
   labels:
     team: android
+    environment: {{ .Values.environment }}
     architecture: amd64
     {{- include "karpenter-config.labels" . | nindent 4 }}
 spec:
@@ -81,6 +84,7 @@ spec:
     metadata:
       labels:
         team: android
+    environment: {{ .Values.environment }}
         workload-type: mobile-api
         architecture: amd64
     spec:

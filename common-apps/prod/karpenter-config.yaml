@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: karpenter-config
+  name: karpenter-config-prod
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -14,7 +14,7 @@ spec:
     path: charts/karpenter-config
     helm:
       valueFiles:
-        - ../../common-apps/default/values/karpenter-config.yaml
+        - ../../common-apps/prod/values/karpenter-config.yaml
   
   destination:
     server: https://kubernetes.default.svc
@@ -25,7 +25,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=false  # karpenter namespace는 이미 존재
+      - CreateNamespace=false
       - ServerSideApply=true
     retry:
       limit: 5

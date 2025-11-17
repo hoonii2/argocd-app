@@ -1,5 +1,6 @@
-# my-cluster 설정
+# my-cluster Dev 환경 설정
 clusterName: my-cluster
+environment: dev
 
 # Instance Profile (Terraform output)
 instanceProfileName: "eks_nodes-node-group-20251112072310118500000008-20251112073427281900000016"
@@ -9,7 +10,7 @@ nodePool:
   ondemand:
     enabled: true
 
-    # 가장 저렴한 인스턴스만
+    # Dev: micro/small 포함 (DaemonSet 고려)
     instanceTypes:
       - t4g.micro    # $0.0084/h (ARM) - 최저가
       - t3.micro     # $0.0104/h
@@ -17,8 +18,8 @@ nodePool:
       - t3.small     # $0.0208/h
 
     limits:
-      cpu: "10"
-      memory: "20Gi"
+      cpu: "4"       # Dev: 제한된 리소스
+      memory: "8Gi"
 
     weight: 50  # Spot보다 낮은 우선순위
 
@@ -32,17 +33,16 @@ nodePool:
   spot:
     enabled: true
 
-    # 다양한 타입으로 Spot 가용성 확보
+    # Dev: micro/small만 (비용 절감)
     instanceTypes:
       - t4g.micro    # $0.0042/h Spot (ARM)
       - t3.micro     # $0.0045/h Spot
       - t4g.small    # $0.0085/h Spot (ARM)
       - t3.small     # $0.0096/h Spot
-      - c7i-flex.large # 필요 시
 
     limits:
-      cpu: "10"
-      memory: "20Gi"
+      cpu: "4"       # Dev: 제한된 리소스
+      memory: "8Gi"
 
     weight: 10  # 최우선 선택
 
@@ -95,8 +95,8 @@ teams:
         - t3.small     # $0.0208/h
 
     limits:
-      cpu: "4"
-      memory: "8Gi"
+      cpu: "2"       # Dev: 제한된 리소스
+      memory: "4Gi"
 
     disruption:
       consolidationPolicy: WhenEmptyOrUnderutilized
@@ -124,8 +124,8 @@ teams:
         - t3.small     # $0.0208/h
 
     limits:
-      cpu: "4"
-      memory: "8Gi"
+      cpu: "2"       # Dev: 제한된 리소스
+      memory: "4Gi"
 
     disruption:
       consolidationPolicy: WhenEmptyOrUnderutilized
@@ -153,8 +153,8 @@ teams:
         - t3.small     # $0.0208/h
 
     limits:
-      cpu: "8"
-      memory: "16Gi"
+      cpu: "4"       # Dev: 제한된 리소스
+      memory: "8Gi"
 
     disruption:
       consolidationPolicy: WhenEmptyOrUnderutilized

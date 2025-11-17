@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: common-root
+  name: prod-root
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/hoonii2/argocd-app.git
     targetRevision: main
-    path: common-apps/green
+    path: common-apps/prod
     directory:
       recurse: false
       include: '*.yaml'

@@ -113,3 +113,6 @@ teams:
       consolidateAfter: 30s
       budgets:
         - nodes: "100%"
+
+  devops:
+    enabled: false  # DevOps는 shared에서 관리

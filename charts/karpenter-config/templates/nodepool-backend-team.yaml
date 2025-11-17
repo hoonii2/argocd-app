@@ -15,7 +15,7 @@ spec:
     metadata:
       labels:
         team: backend
-    environment: {{ .Values.environment }}
+        environment: {{ .Values.environment }}
         workload-type: api-server
         architecture: arm64
     spec:
@@ -84,7 +84,7 @@ spec:
     metadata:
       labels:
         team: backend
-    environment: {{ .Values.environment }}
+        environment: {{ .Values.environment }}
         workload-type: api-server
         architecture: amd64
     spec:

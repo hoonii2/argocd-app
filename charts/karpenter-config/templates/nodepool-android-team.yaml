@@ -15,7 +15,7 @@ spec:
     metadata:
       labels:
         team: android
-    environment: {{ .Values.environment }}
+        environment: {{ .Values.environment }}
         workload-type: mobile-api
         architecture: arm64
     spec:
@@ -84,7 +84,7 @@ spec:
     metadata:
       labels:
         team: android
-    environment: {{ .Values.environment }}
+        environment: {{ .Values.environment }}
         workload-type: mobile-api
         architecture: amd64
     spec:

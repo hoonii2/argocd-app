@@ -20,9 +20,7 @@ spec:
           # Use default plugins from chart (recommended by official docs)
           # Includes: kubernetes, workflow-aggregator, git, configuration-as-code
           # with compatible versions that resolve dependencies automatically
-          additionalPlugins:
-            - docker-workflow:580.vc0c340686b_54
-            - amazon-ecr:1.79.v4649a_9f899f0
+          # Note: docker-workflow and amazon-ecr will be installed via Jenkins UI after startup
 
           JCasC:
             defaultConfig: true

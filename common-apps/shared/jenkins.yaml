@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.jenkins.io
+    chart: jenkins
+    targetRevision: 5.7.15
+    helm:
+      values: |
+        controller:
+          serviceType: ClusterIP
+
+          installPlugins:
+            - kubernetes:4253.v7700d91739e5
+            - workflow-aggregator:600.vb_57cdd26fdd7
+            - git:5.5.2
+            - configuration-as-code:1836.vccda_4a_122a_a_e
+            - docker-workflow:580.vc0c340686b_54
+            - amazon-ecr:1.79.v4649a_9f899f0
+
+          JCasC:
+            defaultConfig: true
+            configScripts:
+              welcome-message: |
+                jenkins:
+                  systemMessage: "Jenkins for EKS MSA CI/CD"
+
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+
+          tolerations:
+            - key: "team"
+              operator: "Equal"
+              value: "devops"
+              effect: "NoSchedule"
+
+          nodeSelector:
+            team: devops
+
+        agent:
+          enabled: true
+          tolerations:
+            - key: "team"
+              operator: "Equal"
+              value: "devops"
+              effect: "NoSchedule"
+          nodeSelector:
+            team: devops
+
+        persistence:
+          enabled: true
+          size: 10Gi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

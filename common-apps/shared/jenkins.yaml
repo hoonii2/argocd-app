@@ -45,6 +45,9 @@ spec:
               operator: "Equal"
               value: "devops"
               effect: "NoSchedule"
+            - key: "architecture"
+              operator: "Exists"
+              effect: "NoSchedule"
 
           nodeSelector:
             team: devops
@@ -56,12 +59,16 @@ spec:
               operator: "Equal"
               value: "devops"
               effect: "NoSchedule"
+            - key: "architecture"
+              operator: "Exists"
+              effect: "NoSchedule"
           nodeSelector:
             team: devops
 
         persistence:
           enabled: true
           size: 10Gi
+          storageClass: gp2
 
   destination:
     server: https://kubernetes.default.svc

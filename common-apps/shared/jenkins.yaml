@@ -46,10 +46,12 @@ spec:
               value: "devops"
               effect: "NoSchedule"
             - key: "architecture"
-              operator: "Exists"
+              operator: "Equal"
+              value: "arm64"
               effect: "NoSchedule"
 
           nodeSelector:
+            kubernetes.io/arch: arm64
             team: devops
 
         agent:
@@ -60,9 +62,11 @@ spec:
               value: "devops"
               effect: "NoSchedule"
             - key: "architecture"
-              operator: "Exists"
+              operator: "Equal"
+              value: "arm64"
               effect: "NoSchedule"
           nodeSelector:
+            kubernetes.io/arch: arm64
             team: devops
 
         persistence:

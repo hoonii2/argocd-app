@@ -1,0 +1,6 @@
+apiVersion: v2
+name: backend-api
+description: Backend API service for TODO system
+type: application
+version: 0.1.0
+appVersion: "1.0"

@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-image-updater
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argocd-image-updater
+    targetRevision: 0.11.0
+    helm:
+      values: |
+        config:
+          # ArgoCD connection
+          argocd:
+            grpcWeb: true
+            serverAddress: https://argocd-server.argocd.svc.cluster.local
+            insecure: true
+            plaintext: false
+
+          # Registry configuration
+          registries:
+            - name: ecr
+              api_url: https://211125450494.dkr.ecr.ap-northeast-2.amazonaws.com
+              prefix: 211125450494.dkr.ecr.ap-northeast-2.amazonaws.com
+              credentials: ext:/scripts/ecr-login.sh
+              credsexpire: 10h
+              default: true
+
+        # ECR login script
+        extraEnv:
+          - name: AWS_REGION
+            value: ap-northeast-2
+
+        authScripts:
+          enabled: true
+          scripts:
+            ecr-login.sh: |
+              #!/bin/sh
+              aws ecr get-login-password --region ap-northeast-2
+
+        # Service account for AWS IAM
+        serviceAccount:
+          create: true
+
+        # Resource limits
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

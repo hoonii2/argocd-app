@@ -31,10 +31,12 @@ spec:
               credsexpire: 10h
               default: true
 
-        # ECR login script
+        # ECR login script with writable tmp for aws cli
         extraEnv:
           - name: AWS_REGION
             value: ap-northeast-2
+          - name: HOME
+            value: /tmp
 
         authScripts:
           enabled: true

@@ -4,16 +4,19 @@ metadata:
   name: istio-gateway
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"  # istiod 다음에 설치
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   project: default
-  source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.24.2
-    chart: gateway
-    helm:
-      valueFiles:
-      - https://raw.githubusercontent.com/hoonii2/argocd-app/main/common-apps/shared/values/istio-gateway.yaml
+  sources:
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      targetRevision: 1.24.2
+      chart: gateway
+      helm:
+        valueFiles:
+          - $values/common-apps/shared/values/istio-gateway.yaml
+    - repoURL: https://github.com/hoonii2/argocd-app.git
+      targetRevision: main
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-ingress

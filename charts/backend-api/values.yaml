@@ -24,7 +24,7 @@ resources:
 # Team and environment labels
 team: backend
 environment: dev
-architecture: arm64
+architecture: amd64
 
 # Health probes
 livenessProbe:

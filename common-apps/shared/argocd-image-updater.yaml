@@ -43,7 +43,7 @@ spec:
           scripts:
             ecr-login.sh: |
               #!/bin/sh
-              aws ecr get-login-password --region ap-northeast-2
+              echo "AWS:$(aws ecr get-login-password --region ap-northeast-2)"
 
         # Service account for AWS IAM
         serviceAccount:

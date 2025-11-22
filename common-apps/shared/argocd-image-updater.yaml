@@ -46,6 +46,9 @@ spec:
         # Service account for AWS IAM
         serviceAccount:
           create: true
+          name: argocd-image-updater
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::476120258327:role/argocd-image-updater-20251122094023108800000001
 
         # Resource limits
         resources:

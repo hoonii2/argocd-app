@@ -88,6 +88,12 @@ spec:
           size: 10Gi
           storageClass: gp2
 
+        serviceAccount:
+          create: true
+          name: jenkins
+          annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::476120258327:role/jenkins-20251122094023108800000002
+
   destination:
     server: https://kubernetes.default.svc
     namespace: devops

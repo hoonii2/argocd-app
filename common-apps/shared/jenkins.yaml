@@ -17,10 +17,23 @@ spec:
         controller:
           serviceType: ClusterIP
 
+          # Ingress for ALB (shared with ArgoCD)
+          ingress:
+            enabled: true
+            ingressClassName: alb
+            hostName: jenkins.hoonii2.store
+            annotations:
+              alb.ingress.kubernetes.io/group.name: devops-alb
+              alb.ingress.kubernetes.io/scheme: internet-facing
+              alb.ingress.kubernetes.io/target-type: ip
+              alb.ingress.kubernetes.io/backend-protocol: HTTP
+              alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+              alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:476120258327:certificate/921a2829-3004-4c74-8930-7fdb44e1d5c5
+              alb.ingress.kubernetes.io/ssl-redirect: "443"
+              external-dns.alpha.kubernetes.io/hostname: jenkins.hoonii2.store
+
           # Use default plugins from chart (recommended by official docs)
-          # Includes: kubernetes, workflow-aggregator, git, configuration-as-code
-          # with compatible versions that resolve dependencies automatically
-          # Note: docker-workflow and amazon-ecr will be installed via Jenkins UI after startup
+          # Note: docker-workflow and amazon-ecr installed via Jenkins UI
 
           JCasC:
             defaultConfig: true

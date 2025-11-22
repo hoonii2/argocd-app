@@ -4,13 +4,12 @@ image:
   repository: hashicorp/http-echo
   tag: "0.2.3"
   pullPolicy: IfNotPresent
-  
+
+# ALB Ingress 비활성화 (Istio Gateway 사용)
 ingress:
-  hostname: web.hoonii2.store
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-    external-dns.alpha.kubernetes.io/hostname: web.hoonii2.store
-    external-dns.alpha.kubernetes.io/aws-weight: "0"
-    external-dns.alpha.kubernetes.io/set-identifier: simple-web-default
+  enabled: false
+
+# Istio Gateway + VirtualService 활성화
+istio:
+  enabled: true
+  host: web.hoonii2.store

@@ -22,6 +22,10 @@ ingress:
   hostname: ""
   annotations: {}
 
+istio:
+  enabled: false
+  host: ""
+
 resources:
   limits:
     cpu: 100m

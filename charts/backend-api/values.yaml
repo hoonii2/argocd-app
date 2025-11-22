@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: 211125450494.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/backend-api
+  repository: 476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/backend-api
   tag: latest
   pullPolicy: Always
 

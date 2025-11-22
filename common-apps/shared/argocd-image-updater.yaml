@@ -25,8 +25,8 @@ spec:
           # Registry configuration
           registries:
             - name: ecr
-              api_url: https://211125450494.dkr.ecr.ap-northeast-2.amazonaws.com
-              prefix: 211125450494.dkr.ecr.ap-northeast-2.amazonaws.com
+              api_url: https://476120258327.dkr.ecr.ap-northeast-2.amazonaws.com
+              prefix: 476120258327.dkr.ecr.ap-northeast-2.amazonaws.com
               credentials: ext:/scripts/ecr-login.sh
               credsexpire: 10h
               default: true

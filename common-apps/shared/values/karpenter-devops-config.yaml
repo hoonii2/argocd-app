@@ -50,6 +50,7 @@ teams:
       instanceTypes:
         - t3.micro
         - t3.small
+        - m7i-flex.large
 
     limits:
       cpu: "4"

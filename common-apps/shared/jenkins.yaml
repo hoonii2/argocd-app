@@ -17,6 +17,10 @@ spec:
         controller:
           serviceType: ClusterIP
 
+          # Karpenter Consolidation으로 인한 노드 삭제 방지
+          podAnnotations:
+            karpenter.sh/do-not-disrupt: "true"
+
           # Ingress for ALB (shared with ArgoCD)
           ingress:
             enabled: true

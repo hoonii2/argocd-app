@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: web-frontend-dev
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: web-frontend=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/web-frontend
+    argocd-image-updater.argoproj.io/web-frontend.update-strategy: latest
+    argocd-image-updater.argoproj.io/web-frontend.helm.image-name: image.repository
+    argocd-image-updater.argoproj.io/web-frontend.helm.image-tag: image.tag
+    argocd-image-updater.argoproj.io/write-back-method: git
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hoonii2/argocd-app.git
+    path: charts/web-frontend
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+      values: |
+        environment: dev
+        replicaCount: 1
+
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: web-team-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

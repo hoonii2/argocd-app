@@ -1,0 +1,47 @@
+replicaCount: 2
+
+image:
+  repository: 476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/mobile-gateway
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Team and environment labels
+team: android
+environment: dev
+architecture: amd64
+
+# Health probes
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 20
+  periodSeconds: 5
+
+# Istio Gateway integration
+istio:
+  enabled: true
+  host: api.hoonii2.store

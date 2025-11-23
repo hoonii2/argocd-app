@@ -1,0 +1,47 @@
+replicaCount: 1
+
+image:
+  repository: 476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/web-frontend
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+ingress:
+  enabled: false
+
+# Team and environment labels
+team: web
+environment: dev
+architecture: amd64
+
+# Health probes
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+# Istio Gateway integration
+istio:
+  enabled: true
+  host: todo.hoonii2.store

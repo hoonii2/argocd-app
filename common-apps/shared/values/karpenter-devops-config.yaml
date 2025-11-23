@@ -53,8 +53,8 @@ teams:
         - m7i-flex.large
 
     limits:
-      cpu: "4"
-      memory: "8Gi"
+      cpu: "8"
+      memory: "16Gi"
 
     disruption:
       consolidationPolicy: WhenEmptyOrUnderutilized

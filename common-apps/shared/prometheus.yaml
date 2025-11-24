@@ -14,11 +14,9 @@ spec:
     targetRevision: 26.0.0
     helm:
       values: |
-        # Remote write to Mimir
+        # Prometheus server (standalone, no Mimir)
         server:
           enabled: true
-          remoteWrite:
-            - url: http://mimir-nginx.observability.svc.cluster.local:80/api/v1/push
 
           persistentVolume:
             enabled: true
@@ -27,13 +25,13 @@ spec:
 
           resources:
             requests:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 100m
+              memory: 256Mi
             limits:
-              cpu: 1
-              memory: 1Gi
+              cpu: 500m
+              memory: 512Mi
 
-          retention: "2d"
+          retention: "3d"
 
           tolerations:
             - key: team

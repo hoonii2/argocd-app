@@ -58,12 +58,6 @@ spec:
               tls:
                 insecure: true
 
-            # Metrics to Mimir (via Prometheus remote write)
-            prometheusremotewrite:
-              endpoint: http://mimir-nginx.observability.svc.cluster.local:80/api/v1/push
-              tls:
-                insecure: true
-
             # Logs to Loki
             loki:
               endpoint: http://loki.observability.svc.cluster.local:3100/loki/api/v1/push
@@ -77,11 +71,6 @@ spec:
                 receivers: [otlp]
                 processors: [memory_limiter, resource, batch]
                 exporters: [otlp/tempo]
-
-              metrics:
-                receivers: [otlp]
-                processors: [memory_limiter, resource, batch]
-                exporters: [prometheusremotewrite]
 
               logs:
                 receivers: [otlp]

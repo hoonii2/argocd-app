@@ -69,12 +69,18 @@ spec:
         gateway:
           enabled: false
 
-        # Monitoring
+        # Disable monitoring components
         monitoring:
           selfMonitoring:
             enabled: false
           lokiCanary:
             enabled: false
+
+        # Disable caching (resource heavy)
+        chunksCache:
+          enabled: false
+        resultsCache:
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc

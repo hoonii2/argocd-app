@@ -36,25 +36,23 @@ spec:
         adminUser: admin
         adminPassword: admin123!
 
-        # Datasources - LGTM Stack
+        # Datasources - Lightweight Stack (Prometheus + Loki + Tempo)
         datasources:
           datasources.yaml:
             apiVersion: 1
             datasources:
-              # Mimir (Metrics)
-              - name: Mimir
+              # Prometheus (Metrics)
+              - name: Prometheus
                 type: prometheus
-                url: http://mimir-nginx.observability.svc.cluster.local:80/prometheus
+                uid: prometheus
+                url: http://prometheus-server.observability.svc.cluster.local:80
                 access: proxy
                 isDefault: true
-                jsonData:
-                  httpMethod: POST
-                  manageAlerts: true
-                  prometheusType: Mimir
 
               # Loki (Logs)
               - name: Loki
                 type: loki
+                uid: loki
                 url: http://loki.observability.svc.cluster.local:3100
                 access: proxy
                 jsonData:
@@ -75,15 +73,11 @@ spec:
                   httpMethod: GET
                   tracesToLogs:
                     datasourceUid: loki
-                    tags: ['service.name']
-                    mappedTags: [{ key: 'service.name', value: 'app' }]
-                    mapTagNamesEnabled: true
                     filterByTraceID: true
                   tracesToMetrics:
-                    datasourceUid: mimir
-                    tags: [{ key: 'service.name', value: 'service' }]
+                    datasourceUid: prometheus
                   serviceMap:
-                    datasourceUid: mimir
+                    datasourceUid: prometheus
                   nodeGraph:
                     enabled: true
                   lokiSearch:

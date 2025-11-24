@@ -1,0 +1,135 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 8.8.2
+    helm:
+      values: |
+        replicas: 1
+
+        # Ingress for ALB (shared with DevOps ALB)
+        ingress:
+          enabled: true
+          ingressClassName: alb
+          hosts:
+            - grafana.hoonii2.store
+          annotations:
+            alb.ingress.kubernetes.io/group.name: devops-alb
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/backend-protocol: HTTP
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+            alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:476120258327:certificate/921a2829-3004-4c74-8930-7fdb44e1d5c5
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            external-dns.alpha.kubernetes.io/hostname: grafana.hoonii2.store
+
+        # Admin credentials
+        adminUser: admin
+        adminPassword: admin123!
+
+        # Datasources - LGTM Stack
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              # Mimir (Metrics)
+              - name: Mimir
+                type: prometheus
+                url: http://mimir-nginx.observability.svc.cluster.local:80/prometheus
+                access: proxy
+                isDefault: true
+                jsonData:
+                  httpMethod: POST
+                  manageAlerts: true
+                  prometheusType: Mimir
+
+              # Loki (Logs)
+              - name: Loki
+                type: loki
+                url: http://loki.observability.svc.cluster.local:3100
+                access: proxy
+                jsonData:
+                  maxLines: 1000
+                  derivedFields:
+                    - datasourceUid: tempo
+                      matcherRegex: "traceID=(\\w+)"
+                      name: TraceID
+                      url: "$${__value.raw}"
+
+              # Tempo (Traces)
+              - name: Tempo
+                type: tempo
+                uid: tempo
+                url: http://tempo.observability.svc.cluster.local:3100
+                access: proxy
+                jsonData:
+                  httpMethod: GET
+                  tracesToLogs:
+                    datasourceUid: loki
+                    tags: ['service.name']
+                    mappedTags: [{ key: 'service.name', value: 'app' }]
+                    mapTagNamesEnabled: true
+                    filterByTraceID: true
+                  tracesToMetrics:
+                    datasourceUid: mimir
+                    tags: [{ key: 'service.name', value: 'service' }]
+                  serviceMap:
+                    datasourceUid: mimir
+                  nodeGraph:
+                    enabled: true
+                  lokiSearch:
+                    datasourceUid: loki
+
+        # Persistence
+        persistence:
+          enabled: true
+          size: 5Gi
+          storageClass: gp2
+
+        # Resources
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+        # Grafana configuration
+        grafana.ini:
+          server:
+            root_url: https://grafana.hoonii2.store
+          auth.anonymous:
+            enabled: false
+          users:
+            allow_sign_up: false
+
+        # Sidecar for dashboards
+        sidecar:
+          dashboards:
+            enabled: true
+            label: grafana_dashboard
+            labelValue: "1"
+            searchNamespace: ALL
+          datasources:
+            enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

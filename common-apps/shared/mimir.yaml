@@ -1,0 +1,150 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mimir
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: mimir-distributed
+    targetRevision: 5.5.1
+    helm:
+      values: |
+        # Single binary mode for small deployments
+        mimir:
+          structuredConfig:
+            common:
+              storage:
+                backend: filesystem
+                filesystem:
+                  dir: /data
+            blocks_storage:
+              backend: filesystem
+              filesystem:
+                dir: /data/blocks
+            ruler_storage:
+              backend: filesystem
+              filesystem:
+                dir: /data/ruler
+
+        # Monolithic mode - single replica for dev
+        minio:
+          enabled: false
+
+        # Use single binary deployment
+        distributor:
+          replicas: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        ingester:
+          replicas: 1
+          persistentVolume:
+            enabled: true
+            size: 10Gi
+            storageClass: gp2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          zoneAwareReplication:
+            enabled: false
+
+        store_gateway:
+          replicas: 1
+          persistentVolume:
+            enabled: true
+            size: 10Gi
+            storageClass: gp2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          zoneAwareReplication:
+            enabled: false
+
+        compactor:
+          replicas: 1
+          persistentVolume:
+            enabled: true
+            size: 10Gi
+            storageClass: gp2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        querier:
+          replicas: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+        query_frontend:
+          replicas: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+
+        # Disable unused components
+        ruler:
+          enabled: false
+        alertmanager:
+          enabled: false
+        overrides_exporter:
+          enabled: false
+        query_scheduler:
+          enabled: false
+
+        # Disable rollout operator
+        rollout_operator:
+          enabled: false
+
+        # Nginx gateway
+        nginx:
+          enabled: true
+          replicas: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

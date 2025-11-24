@@ -17,6 +17,10 @@ spec:
         app: {{ .Chart.Name }}
         team: {{ .Values.team }}
         environment: {{ .Values.environment }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.targetPort }}"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       tolerations:
         - key: team

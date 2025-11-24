@@ -87,7 +87,7 @@ spec:
         persistence:
           enabled: true
           size: 5Gi
-          storageClass: gp2
+          storageClassName: gp2
 
         # Resources
         resources:

@@ -15,10 +15,9 @@ service:
     external-dns.alpha.kubernetes.io/hostname: "web.hoonii2.store,todo.hoonii2.store,api.hoonii2.store"
     external-dns.alpha.kubernetes.io/aws-weight: "100"
     external-dns.alpha.kubernetes.io/set-identifier: "my-cluster"
-    # NLB에서 SSL 종료하려면 아래 주석 해제
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:region:account:certificate/xxx"
-    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    # NLB에서 SSL 종료 (ACM 인증서 사용)
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:ap-northeast-2:476120258327:certificate/921a2829-3004-4c74-8930-7fdb44e1d5c5"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
 
   ports:
   - name: http
@@ -27,7 +26,7 @@ service:
     protocol: TCP
   - name: https
     port: 443
-    targetPort: 443
+    targetPort: 80
     protocol: TCP
 
 # Resource limits

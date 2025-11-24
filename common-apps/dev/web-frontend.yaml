@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd-image-updater.argoproj.io/image-list: web-frontend=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/web-frontend
+    argocd-image-updater.argoproj.io/image-list: web-frontend=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/web-frontend:latest
     argocd-image-updater.argoproj.io/web-frontend.update-strategy: digest
     argocd-image-updater.argoproj.io/web-frontend.helm.image-name: image.repository
     argocd-image-updater.argoproj.io/web-frontend.helm.image-tag: image.tag

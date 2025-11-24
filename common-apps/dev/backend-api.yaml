@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd-image-updater.argoproj.io/image-list: backend-api=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/backend-api
+    argocd-image-updater.argoproj.io/image-list: backend-api=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/backend-api:latest
     argocd-image-updater.argoproj.io/backend-api.update-strategy: digest
     argocd-image-updater.argoproj.io/backend-api.helm.image-name: image.repository
     argocd-image-updater.argoproj.io/backend-api.helm.image-tag: image.tag

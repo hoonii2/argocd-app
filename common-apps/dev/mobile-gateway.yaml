@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd-image-updater.argoproj.io/image-list: mobile-gateway=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/mobile-gateway
+    argocd-image-updater.argoproj.io/image-list: mobile-gateway=476120258327.dkr.ecr.ap-northeast-2.amazonaws.com/my-cluster/mobile-gateway:latest
     argocd-image-updater.argoproj.io/mobile-gateway.update-strategy: digest
     argocd-image-updater.argoproj.io/mobile-gateway.helm.image-name: image.repository
     argocd-image-updater.argoproj.io/mobile-gateway.helm.image-tag: image.tag

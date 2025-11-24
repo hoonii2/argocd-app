@@ -44,6 +44,20 @@ spec:
           size: 10Gi
           storageClass: gp2
 
+        tolerations:
+          - key: team
+            operator: Equal
+            value: devops
+            effect: NoSchedule
+          - key: architecture
+            operator: Equal
+            value: arm64
+            effect: NoSchedule
+
+        nodeSelector:
+          kubernetes.io/arch: arm64
+          team: devops
+
         # Service for OTLP ingestion
         service:
           type: ClusterIP

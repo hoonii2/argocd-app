@@ -35,6 +35,20 @@ spec:
 
           retention: "2d"
 
+          tolerations:
+            - key: team
+              operator: Equal
+              value: devops
+              effect: NoSchedule
+            - key: architecture
+              operator: Equal
+              value: arm64
+              effect: NoSchedule
+
+          nodeSelector:
+            kubernetes.io/arch: arm64
+            team: devops
+
         # Alertmanager - disabled (use Grafana alerting)
         alertmanager:
           enabled: false
@@ -42,6 +56,18 @@ spec:
         # Kube-state-metrics
         kube-state-metrics:
           enabled: true
+          tolerations:
+            - key: team
+              operator: Equal
+              value: devops
+              effect: NoSchedule
+            - key: architecture
+              operator: Equal
+              value: arm64
+              effect: NoSchedule
+          nodeSelector:
+            kubernetes.io/arch: arm64
+            team: devops
 
         # Prometheus-node-exporter
         prometheus-node-exporter:

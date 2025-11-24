@@ -77,18 +77,6 @@ spec:
                 processors: [memory_limiter, resource, batch]
                 exporters: [loki]
 
-        service:
-          type: ClusterIP
-          ports:
-            otlp-grpc:
-              port: 4317
-              targetPort: 4317
-              protocol: TCP
-            otlp-http:
-              port: 4318
-              targetPort: 4318
-              protocol: TCP
-
         ports:
           otlp:
             enabled: true
